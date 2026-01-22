@@ -1,0 +1,7 @@
+streamlit==1.37.1
+pillow==10.2.0
+google-generativeai==0.7.2
+smtplib 
+ssl       
+pandas==2.2.2
+openpyxl==3.1.5
