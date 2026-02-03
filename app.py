@@ -1,156 +1,256 @@
 import streamlit as st
-import google.generativeai as genai
-from PIL import Image
-import subprocess
-import sys
-import os
-import json
-from datetime import datetime
 
-page_bg = """
-<style>
-[data-testid="stAppViewContainer"] {
-    background-color: #f0f8ff; /* Light blue */
-}
-[data-testid="stHeader"] {
-    background-color: rgba(0,0,0,0); /* Transparent header */
-}
-</style>
-"""
+st.set_page_config(page_title="NR Portfolio", layout="wide")
 
-# ------------------- APP SETUP -------------------
-st.set_page_config(page_title="NR Image Descriptor", layout="wide")
+st.markdown(
+    """
+    <style>
+    :root {
+        --bg: #0b0b0b;
+        --card: #161616;
+        --accent: #ff8c00;
+        --accent-soft: rgba(255, 140, 0, 0.12);
+        --text: #f5f5f5;
+        --muted: #c7c7c7;
+    }
+    [data-testid="stAppViewContainer"] {
+        background-color: var(--bg);
+        color: var(--text);
+    }
+    [data-testid="stHeader"] {
+        background: transparent;
+    }
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 0.4rem;
+    }
+    .hero-subtitle {
+        font-size: 1.2rem;
+        color: var(--muted);
+        margin-bottom: 1.5rem;
+    }
+    .accent {
+        color: var(--accent);
+    }
+    .card {
+        background: var(--card);
+        border: 1px solid #262626;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 0 0 1px rgba(255, 140, 0, 0.08);
+    }
+    .chip {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-size: 0.85rem;
+        margin: 4px 6px 4px 0;
+        border: 1px solid rgba(255, 140, 0, 0.35);
+    }
+    .cta {
+        display: inline-block;
+        padding: 12px 18px;
+        border-radius: 10px;
+        background: var(--accent);
+        color: #111111;
+        font-weight: 600;
+        text-decoration: none;
+        margin-right: 12px;
+    }
+    .secondary {
+        background: transparent;
+        color: var(--text);
+        border: 1px solid var(--accent);
+    }
+    hr {
+        border-color: #2b2b2b;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
-st.title("🖼️ NR Image Descriptor and Content Modifier")
+st.markdown(
+    """
+    <div class="hero-title">Naveen Raj <span class="accent">Portfolio</span></div>
+    <div class="hero-subtitle">
+        AI + Product engineer crafting intelligent experiences, from image understanding to human-centered
+        interfaces.
+    </div>
+    <a class="cta" href="#projects">View Projects</a>
+    <a class="cta secondary" href="#contact">Get in Touch</a>
+    """,
+    unsafe_allow_html=True,
+)
 
-# ------------------- API KEY -------------------
-GEMINI_API_KEY = "AIzaSyACWRc1oFANxMdbJk-NxTs-Y3N7I19e0Uo"   # replace with your key
-genai.configure(api_key=GEMINI_API_KEY)
+st.markdown("---")
 
-# ------------------- FIXED MODEL -------------------
-MODEL_NAME = "gemini-1.5-flash"
-model = genai.GenerativeModel(MODEL_NAME)
+left, right = st.columns([2, 1], gap="large")
+with left:
+    st.markdown(
+        """
+        <div class="card">
+            <h3>About</h3>
+            <p>
+                I design and build AI-powered products that blend analytics, automation, and delightful UX.
+                My focus is on shipping reliable, scalable solutions that simplify complex workflows and
+                generate measurable value for teams.
+            </p>
+            <p>
+                Recent work includes multimodal assistants, content transformation pipelines, and deployment
+                tooling for rapid experimentation.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-# ------------------- HISTORY JSON -------------------
-HISTORY_FILE = "history.json"
+with right:
+    st.markdown(
+        """
+        <div class="card">
+            <h3>Quick Facts</h3>
+            <p><strong>Location:</strong> Nagercoil, India</p>
+            <p><strong>Focus:</strong> AI/ML, Full-stack, UX Systems</p>
+            <p><strong>Availability:</strong> Open to collaborations</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-def load_history():
-    if os.path.exists(HISTORY_FILE):
-        with open(HISTORY_FILE, "r") as f:
-            return json.load(f)
-    return []
+st.markdown("### Core Skills")
+st.markdown(
+    """
+    <span class="chip">Generative AI</span>
+    <span class="chip">Python</span>
+    <span class="chip">Streamlit</span>
+    <span class="chip">Computer Vision</span>
+    <span class="chip">Prompt Engineering</span>
+    <span class="chip">Product Strategy</span>
+    <span class="chip">Automation</span>
+    """,
+    unsafe_allow_html=True,
+)
 
-def save_history(entry):
-    history = load_history()
-    history.append(entry)
-    with open(HISTORY_FILE, "w") as f:
-        json.dump(history, f, indent=4)
+st.markdown("---")
 
-# ------------------- NAVIGATION TABS -------------------
-tabs = st.tabs(["🏠 Home", "📜 History", "📞 Contact"])
+st.markdown('<div id="projects"></div>', unsafe_allow_html=True)
+st.markdown("## Projects")
 
-# ------------------- HOME TAB -------------------
-with tabs[0]:
-    st.write("Upload an image, then enter a prompt to get a description. Refine it using the chatbot below.")
+project_col1, project_col2, project_col3 = st.columns(3, gap="large")
 
-    uploaded_file = st.file_uploader("📂 Choose an image...", type=["jpg", "jpeg", "png"])
+with project_col1:
+    st.markdown(
+        """
+        <div class="card">
+            <h4>NR Image Descriptor</h4>
+            <p>
+                A multimodal assistant that generates rich descriptions from images and enables iterative
+                refinements through natural language.
+            </p>
+            <p class="accent"><strong>Stack:</strong> Gemini · Streamlit · Python</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    if uploaded_file is not None:
-        try:
-            # Display uploaded image (smaller size)
-            image = Image.open(uploaded_file)
-            st.image(image, caption="Uploaded Image", width=300)
+with project_col2:
+    st.markdown(
+        """
+        <div class="card">
+            <h4>Content Modifier Studio</h4>
+            <p>
+                A workflow to transform product content into multiple tones and formats while preserving brand
+                voice.
+            </p>
+            <p class="accent"><strong>Stack:</strong> LLMs · Automation · UI Systems</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-            # Save uploaded image to a temp file
-            temp_image_path = "temp_uploaded_image.png"
-            image.save(temp_image_path)
+with project_col3:
+    st.markdown(
+        """
+        <div class="card">
+            <h4>Insight Dashboard</h4>
+            <p>
+                Visual analytics for monitoring model outputs, feedback loops, and content quality KPIs.
+            </p>
+            <p class="accent"><strong>Stack:</strong> Data Viz · Python · Product Analytics</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-            # ------------------- PROMPT -------------------
-            prompt = st.text_input("Enter your prompt for image description")
+st.markdown("---")
 
-            if st.button("Generate Description") and prompt:
-                st.write("⚡ Generating description...")
-                response = model.generate_content([prompt, image])
-                st.session_state.description = response.text
-                st.session_state.image_path = temp_image_path
+st.markdown("## Experience Highlights")
+experience_left, experience_right = st.columns([1.3, 1], gap="large")
 
-                st.subheader("📌 Image Description")
-                st.write(st.session_state.description)
+with experience_left:
+    st.markdown(
+        """
+        <div class="card">
+            <h4>Product & AI Leadership</h4>
+            <ul>
+                <li>Built AI-first workflows that cut manual review time by 40%.</li>
+                <li>Designed prompt libraries that improved consistency across multi-team projects.</li>
+                <li>Delivered end-to-end prototypes from research to deployment.</li>
+            </ul>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-        except Exception as e:
-            st.error(f"Error: {e}")
+with experience_right:
+    st.markdown(
+        """
+        <div class="card">
+            <h4>Tooling & Operations</h4>
+            <ul>
+                <li>Automated content QA with human-in-the-loop review flows.</li>
+                <li>Created dashboards for visibility into model performance.</li>
+                <li>Optimized pipelines for faster experimentation cycles.</li>
+            </ul>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    # ------------------- CHATBOT -------------------
-    if "description" in st.session_state and st.session_state.description:
-        st.subheader("💬 Refine Description (Chatbot)")
-        if "chat" not in st.session_state:
-            st.session_state.chat = model.start_chat(history=[])
+st.markdown("---")
 
-        user_input = st.text_input("Enter your modification request:", key="chat_input")
+st.markdown('<div id="contact"></div>', unsafe_allow_html=True)
+st.markdown("## Contact")
+contact_left, contact_right = st.columns([1.4, 1], gap="large")
 
-        if st.button("Modify"):
-            try:
-                full_prompt = f"Here is the current description: {st.session_state.description}\n\nUser request: {user_input}"
-                chat_response = st.session_state.chat.send_message(full_prompt)
-                st.session_state.description = chat_response.text
+with contact_left:
+    st.markdown(
+        """
+        <div class="card">
+            <h4>Let's build something bold.</h4>
+            <p>
+                I love collaborating on ambitious AI and product initiatives. Reach out for partnerships,
+                consulting, or full-time opportunities.
+            </p>
+            <p><strong>Email:</strong> naveenmadhan86@gmail.com</p>
+            <p><strong>Phone:</strong> +91 7501199896</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-                st.subheader("✨ Modified Description")
-                st.write(st.session_state.description)
-            except Exception as e:
-                st.error(f"Error: {e}")
-
-        # ------------------- EMAIL SEND -------------------
-        st.subheader("📧 Send Final Description + Image")
-        user_name = st.text_input("Enter your Name")
-        user_email = st.text_input("Enter your Email")
-
-        if st.button("Send via Email"):
-            if user_name and user_email:
-                try:
-                    result = subprocess.run(
-                        [sys.executable, "send_mail.py", user_name, user_email,
-                         st.session_state.description, st.session_state.image_path],
-                        capture_output=True, text=True
-                    )
-                    if result.returncode == 0:
-                        st.success("✅ Email sent successfully!")
-
-                        # Save history entry
-                        entry = {
-                            "name": user_name,
-                            "email": user_email,
-                            "description": st.session_state.description,
-                            "image_path": st.session_state.image_path,
-                            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                        }
-                        save_history(entry)
-                    else:
-                        st.error(f"❌ Failed to send email: {result.stderr}")
-                except Exception as e:
-                    st.error(f"Error while sending email: {e}")
-            else:
-                st.warning("Please enter both name and email before sending.")
-
-# ------------------- HISTORY TAB -------------------
-with tabs[1]:
-    st.subheader("📜 User History")
-    history = load_history()
-    if history:
-        for entry in history:
-            st.write(f"**Name:** {entry['name']}")
-            st.write(f"**Email:** {entry['email']}")
-            st.write(f"**Timestamp:** {entry['timestamp']}")
-            st.write(f"**Description:** {entry['description']}")
-            if entry.get("image_path") and os.path.exists(entry["image_path"]):
-                st.image(entry["image_path"], caption="Uploaded Image", width=300)
-            st.markdown("---")
-    else:
-        st.info("No history found yet.")
-
-# ------------------- CONTACT TAB -------------------
-with tabs[2]:
-    st.subheader("📞 Contact Information")
-    st.write("**Owner:** Naveen Raj K")
-    st.write("**Phone:** +91 7501199896")
-    st.write("**Address:** Nagercoil, India")
-    st.write("**Email:** naveenmadhan86@gmail.com")
+with contact_right:
+    st.markdown(
+        """
+        <div class="card">
+            <h4>Availability</h4>
+            <p>Open for select projects starting next month.</p>
+            <p class="accent"><strong>Preferred:</strong> AI product strategy, prototyping, UX systems</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
